@@ -11,9 +11,7 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
                 }
             }
         }
@@ -21,234 +19,162 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
-        body { 
-            transition: background-color 0.3s, color 0.3s;
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
         }
 
-        /* Watermark Logic - Only for PDF */
+        /* PDF Generation Specific Styles */
+        .pdf-export-mode {
+            width: 1050px !important; /* Fixed width for better PDF scaling */
+            padding: 20px !important;
+            background: white !important;
+            color: black !important;
+        }
+        .pdf-export-mode .no-print { display: none !important; }
+        .pdf-export-mode .data-input { 
+            border: none !important; 
+            background: transparent !important; 
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        .pdf-export-mode #report-main-container { max-width: 100% !important; margin: 0 !important; }
+
         #pdf-watermark {
             display: none;
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
+            opacity: 0.05;
             pointer-events: none;
             text-align: center;
             width: 100%;
             z-index: 0;
-            opacity: 0.04;
         }
-        #pdf-watermark h1 { font-size: 5rem; font-weight: 900; margin: 0; color: #000; }
-        #pdf-watermark p { font-size: 1.5rem; font-weight: 600; margin: 0; color: #000; }
+        .pdf-export-mode #pdf-watermark { display: block !important; }
 
-        .dashboard-card {
-            transition: all 0.2s;
-        }
-
-        /* PDF Styling Specifics - Force Light Mode for PDF */
-        .pdf-mode {
-            padding: 40px !important;
-            background: white !important;
-            color: #1e293b !important;
-            width: 1100px !important;
-        }
-        .pdf-mode .dashboard-card { background: white !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
-        .pdf-mode #pdf-watermark { display: block !important; }
-        .pdf-mode .no-print { display: none !important; }
-        .pdf-mode input { color: #1e293b !important; border: none !important; background: transparent !important; }
-        
-        /* Table Pagination Fixes */
-        .page-break-avoid { break-inside: avoid; page-break-inside: avoid; }
-        
-        .export-dropdown {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            z-index: 50;
-        }
-        .group:hover .export-dropdown { display: block; }
-
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        /* Input visibility fixes */
         .data-input {
-            border: 1px solid transparent;
+            border: 1px solid #e2e8f0;
             transition: all 0.2s;
         }
-        .light .data-input { border-color: #e2e8f0; }
         .dark .data-input { border-color: #334155; }
-        .data-input:hover { border-color: #6366f1 !important; }
+        .data-input:focus { border-color: #6366f1 !important; outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
+        
+        .section-row { background-color: #f8fafc; }
+        .dark .section-row { background-color: #1e293b; }
+
+        .drag-handle { cursor: grab; color: #cbd5e1; }
+        .dragging { opacity: 0.5; }
     </style>
 </head>
 <body class="p-4 md:p-10 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
-    <div id="report-main-container" class="max-relative max-w-7xl mx-auto">
+    <div id="report-main-container" class="relative max-w-7xl mx-auto">
         
-        <!-- Watermark Container (Visible in PDF only) -->
         <div id="pdf-watermark" class="uppercase">
-            <h1>Nirmal Deep School</h1>
-            <p id="targetWatermarkName">Prepared by: Teacher Name</p>
+            <h1 class="text-8xl font-black">Nirmal Deep School</h1>
+            <p id="targetWatermarkName" class="text-3xl font-bold">Prepared by: Teacher Name</p>
         </div>
 
         <div class="flex flex-col lg:flex-row gap-8">
-            
-            <!-- Main Content Area -->
-            <div class="flex-grow space-y-8">
+            <!-- Table Side -->
+            <div id="print-area" class="flex-grow space-y-6">
                 
-                <!-- Header Section -->
-                <div class="flex flex-col md:flex-row justify-between items-end gap-4 page-break-avoid">
+                <!-- Header -->
+                <div class="flex justify-between items-end border-b border-slate-200 dark:border-slate-800 pb-6">
                     <div>
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded">OFFICIAL REPORT</span>
-                            <span class="text-slate-400 dark:text-slate-500 text-xs font-semibold tracking-widest uppercase">Academic Session 2025-26</span>
-                        </div>
-                        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">Hindustani Music Vocal</h1>
-                        <p class="text-slate-500 dark:text-slate-400 font-medium">Departmental Performance Analysis & Grade Sheet</p>
+                        <h1 class="text-3xl font-extrabold tracking-tight">Hindustani Music Vocal</h1>
+                        <p class="text-slate-500 font-medium">Annual Performance Report 2025-26</p>
                     </div>
-                    <div class="text-right hidden md:block">
-                        <img src="https://via.placeholder.com/80?text=NDS" alt="School Logo" class="ml-auto mb-2 opacity-20 grayscale dark:invert">
+                    <div class="no-print flex gap-2">
+                        <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <svg class="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Metrics Dashboard (Top Level) -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 page-break-avoid">
-                    <div class="dashboard-card p-5 border-l-4 border-l-slate-800 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Students</p>
-                        <p id="statTotal" class="text-3xl font-extrabold">0</p>
+                <!-- Stats -->
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Students</p>
+                        <p id="statTotal" class="text-2xl font-bold">0</p>
                     </div>
-                    <div class="dashboard-card p-5 border-l-4 border-l-emerald-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
-                        <p class="text-xs font-bold text-emerald-600/60 uppercase tracking-wider mb-1">Passed</p>
-                        <div class="flex items-baseline gap-2">
-                            <p id="statPass" class="text-3xl font-extrabold text-emerald-600">0</p>
-                            <span id="statPassPerc" class="text-xs font-bold text-emerald-500/70">0%</span>
-                        </div>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm">
+                        <p class="text-[10px] font-bold text-emerald-500 uppercase">Passed</p>
+                        <p id="statPass" class="text-2xl font-bold text-emerald-600">0</p>
                     </div>
-                    <div class="dashboard-card p-5 border-l-4 border-l-rose-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
-                        <p class="text-xs font-bold text-rose-600/60 uppercase tracking-wider mb-1">Failed</p>
-                        <p id="statFail" class="text-3xl font-extrabold text-rose-600">0</p>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm">
+                        <p class="text-[10px] font-bold text-rose-500 uppercase">Failed</p>
+                        <p id="statFail" class="text-2xl font-bold text-rose-600">0</p>
                     </div>
-                    <div class="dashboard-card p-5 border-l-4 border-l-indigo-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
-                        <p class="text-xs font-bold text-indigo-600/60 uppercase tracking-wider mb-1">Class Avg</p>
-                        <p id="statAvg" class="text-3xl font-extrabold text-indigo-600">0.0</p>
+                    <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm">
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase">Avg</p>
+                        <p id="statAvg" class="text-2xl font-bold text-indigo-600">0.0</p>
                     </div>
                 </div>
 
-                <!-- Student List Table -->
-                <div class="dashboard-card overflow-hidden shadow-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
-                                    <th class="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest w-12">No.</th>
-                                    <th class="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Student Full Name</th>
-                                    <th class="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">P1</th>
-                                    <th class="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">HY</th>
-                                    <th class="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">P2</th>
-                                    <th class="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Annual</th>
-                                    <th class="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center bg-slate-100/50 dark:bg-slate-800">Grand Total</th>
-                                    <th class="px-4 py-4 w-10 no-print"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-                                <!-- Rows -->
-                            </tbody>
-                        </table>
-                    </div>
+                <!-- Main Table -->
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+                    <table class="w-full text-left border-collapse" id="mainTable">
+                        <thead class="bg-slate-50 dark:bg-slate-800/50">
+                            <tr>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase w-12 text-center no-print">Move</th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase w-12 text-center">#</th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase">Name</th>
+                                <th class="px-2 py-3 text-[10px] font-bold text-slate-400 uppercase text-center w-20">P1</th>
+                                <th class="px-2 py-3 text-[10px] font-bold text-slate-400 uppercase text-center w-20">HY</th>
+                                <th class="px-2 py-3 text-[10px] font-bold text-slate-400 uppercase text-center w-20">P2</th>
+                                <th class="px-2 py-3 text-[10px] font-bold text-slate-400 uppercase text-center w-20">Annual</th>
+                                <th class="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase text-center w-24 bg-slate-100/50 dark:bg-slate-800">Total</th>
+                                <th class="px-2 py-3 w-10 no-print text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                    </table>
                 </div>
 
-                <button onclick="addRow()" class="no-print w-full py-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-slate-400 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all font-bold flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Register New Student Entry
-                </button>
+                <div class="flex gap-4 no-print">
+                    <button onclick="addRow('student')" class="flex-grow py-3 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-all">+ Add Student</button>
+                    <button onclick="addRow('section')" class="flex-grow py-3 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 font-bold hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-all">+ Add Section</button>
+                </div>
 
-                <!-- Principal Signature Area (Visible in PDF or Print) -->
-                <div class="pt-12 pb-6 flex justify-between items-end page-break-avoid">
+                <!-- Signatures -->
+                <div class="pt-10 flex justify-between items-end">
                     <div class="text-center">
-                        <div class="w-40 border-b border-slate-900 dark:border-slate-100 mb-2 mx-auto"></div>
-                        <p class="text-[10px] font-bold uppercase tracking-tighter text-slate-400">Class Teacher Signature</p>
+                        <div class="w-32 border-b border-slate-400 mb-1"></div>
+                        <p class="text-[9px] uppercase font-bold text-slate-400 tracking-widest">Teacher</p>
                     </div>
                     <div class="text-center">
-                        <div class="text-slate-200 dark:text-slate-700 italic text-xs mb-8">Nirmal Deep School Official Seal</div>
-                        <div class="w-56 border-b-2 border-slate-900 dark:border-slate-100 mb-2 mx-auto"></div>
-                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">Principal Signature</p>
+                        <div class="w-48 border-b-2 border-slate-900 dark:border-slate-200 mb-1"></div>
+                        <p class="text-[9px] uppercase font-bold text-slate-900 dark:text-white tracking-widest">Principal Signature</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar Controls -->
-            <div class="w-full lg:w-80 space-y-6 no-print">
-                
-                <div class="dashboard-card p-6 shadow-xl border-slate-900 bg-slate-900 text-white rounded-2xl">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Configuration</h3>
-                        <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
-                            <span id="theme-icon-sun" class="hidden"><svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path></svg></span>
-                            <span id="theme-icon-moon"><svg class="w-4 h-4 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg></span>
-                        </button>
-                    </div>
+            <!-- Sidebar -->
+            <div id="sidebar-panel" class="w-full lg:w-72 space-y-4 no-print">
+                <div class="p-6 bg-slate-900 text-white rounded-2xl space-y-5 shadow-xl">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-indigo-400">Settings</h3>
                     
-                    <div class="space-y-5">
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">Teacher Name (Watermark)</label>
-                            <input type="text" id="teacherInput" oninput="updateWatermark(this.value)" 
-                                   placeholder="Your Name..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-[10px] font-bold uppercase text-slate-400 mb-2">Passing Threshold</label>
-                            <input type="number" id="passCriteriaInput" value="140" onchange="updatePassCriteria(this.value)" 
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                        </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase">Watermark Name</label>
+                        <input type="text" id="teacherInput" oninput="updateWatermark(this.value)" placeholder="Teacher Name" class="w-full bg-slate-800 border-none rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500">
                     </div>
 
-                    <div class="mt-8 pt-8 border-t border-slate-800 relative group">
-                        <button class="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all">
-                            <span>Generate Report</span>
-                            <svg class="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        
-                        <div class="export-dropdown w-full pt-2">
-                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl overflow-hidden text-slate-900 dark:text-white">
-                                <button onclick="exportToPDF()" class="w-full text-left px-5 py-4 text-sm hover:bg-indigo-50 dark:hover:bg-indigo-900/20 flex items-center gap-3 transition-colors">
-                                    <div class="bg-red-100 dark:bg-red-900/30 p-2 rounded-lg"><svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg></div>
-                                    <div class="flex flex-col">
-                                        <span class="font-bold">Export PDF</span>
-                                        <span class="text-[10px] text-slate-400 font-medium">Official Layout</span>
-                                    </div>
-                                </button>
-                                <button onclick="exportToCSV()" class="w-full text-left px-5 py-4 text-sm hover:bg-emerald-50 dark:hover:bg-emerald-900/20 flex items-center gap-3 border-t border-slate-100 dark:border-slate-800 transition-colors">
-                                    <div class="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-lg"><svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3z"></path></svg></div>
-                                    <div class="flex flex-col">
-                                        <span class="font-bold">Export XLSX</span>
-                                        <span class="text-[10px] text-slate-400 font-medium">Excel Format</span>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase">Pass Mark Threshold</label>
+                        <input type="number" id="passCriteriaInput" value="140" oninput="updatePassCriteria(this.value)" class="w-full bg-slate-800 border-none rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500">
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2">
+                        <button onclick="exportToPDF()" class="w-full bg-indigo-600 py-3 rounded-xl font-bold shadow-lg shadow-indigo-500/30 hover:bg-indigo-500 transition-colors">Export PDF</button>
+                        <button onclick="exportToCSV()" class="w-full bg-emerald-600 py-3 rounded-xl font-bold shadow-lg shadow-emerald-500/30 hover:bg-emerald-500 transition-colors">Export CSV (Excel)</button>
                     </div>
                 </div>
-
-                <div class="dashboard-card p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-4">
-                    <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Cloud Operations</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="saveBackup()" class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Backup</span>
-                        </button>
-                        <label class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
-                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Restore</span>
-                            <input type="file" id="loadBtn" class="hidden" onchange="loadBackup(event)">
-                        </label>
-                    </div>
-                    <button onclick="clearData()" class="w-full py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all">Clear Database</button>
-                </div>
-
-                <div id="saveIndicator" class="text-center opacity-0 transition-opacity duration-500">
-                    <span class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full">Data Synchronized</span>
+                
+                <div class="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl flex flex-col gap-2">
+                    <button onclick="saveBackup()" class="text-xs font-bold py-2 bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">Download JSON</button>
+                    <label class="text-xs font-bold py-2 bg-slate-50 dark:bg-slate-800 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-center cursor-pointer">Restore JSON<input type="file" class="hidden" onchange="loadBackup(event)"></label>
                 </div>
             </div>
         </div>
@@ -256,205 +182,154 @@
 
     <script>
         const tableBody = document.getElementById('tableBody');
-        const STORAGE_KEY = 'nds_vocal_report_v6';
-        const SETTINGS_KEY = 'nds_vocal_settings_v6';
-        const THEME_KEY = 'nds_theme_preference';
+        const STORAGE_KEY = 'nds_report_data_v8';
+        const SETTINGS_KEY = 'nds_report_settings_v8';
         
-        let passMark = localStorage.getItem(SETTINGS_KEY) || 140;
+        let passMark = parseInt(localStorage.getItem(SETTINGS_KEY)) || 140;
         document.getElementById('passCriteriaInput').value = passMark;
 
-        let students = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
-            { name: '', p1: '', hy: '', p2: '', an: '' }
+        let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+            { type: 'section', name: 'CLASS XI - B', p1:'', hy:'', p2:'', an:'' }
         ];
 
-        // Theme Management
-        function toggleDarkMode() {
-            const html = document.getElementById('main-html');
-            const sunIcon = document.getElementById('theme-icon-sun');
-            const moonIcon = document.getElementById('theme-icon-moon');
-            
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                html.classList.add('light');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-                localStorage.setItem(THEME_KEY, 'light');
-            } else {
-                html.classList.add('dark');
-                html.classList.remove('light');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-                localStorage.setItem(THEME_KEY, 'dark');
-            }
-        }
-
-        // Initialize Theme
-        if (localStorage.getItem(THEME_KEY) === 'dark') {
-            document.getElementById('main-html').classList.add('dark');
-            document.getElementById('theme-icon-sun').classList.remove('hidden');
-            document.getElementById('theme-icon-moon').classList.add('hidden');
-        } else {
-            document.getElementById('main-html').classList.add('light');
-        }
+        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
 
         function updateWatermark(val) {
             document.getElementById('targetWatermarkName').innerText = val ? `Prepared by: ${val}` : "Prepared by: Teacher Name";
-            save();
-        }
-
-        function calculateRow(idx) {
-            const s = students[idx];
-            const total = (parseFloat(s.p1)||0) + (parseFloat(s.hy)||0) + (parseFloat(s.p2)||0) + (parseFloat(s.an)||0);
-            const totalCell = document.getElementById(`total-${idx}`);
-            if(totalCell) {
-                totalCell.innerText = total;
-                totalCell.className = `px-6 py-4 text-center font-black text-sm ${total >= passMark ? 'text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20' : 'text-rose-600 bg-rose-50/50 dark:bg-rose-900/20'}`;
-            }
-            updateStats();
-        }
-
-        function renderTable() {
-            tableBody.innerHTML = '';
-            students.forEach((s, idx) => {
-                const total = (parseFloat(s.p1)||0) + (parseFloat(s.hy)||0) + (parseFloat(s.p2)||0) + (parseFloat(s.an)||0);
-                const isPass = total >= passMark;
-                
-                const row = document.createElement('tr');
-                row.className = "hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group";
-                row.innerHTML = `
-                    <td class="px-6 py-4 text-center text-slate-400 font-bold text-xs">${idx + 1}</td>
-                    <td class="px-6 py-4">
-                        <input type="text" value="${s.name}" oninput="updateData(${idx}, 'name', this.value)" placeholder="Enter name..." class="data-input w-full bg-slate-50 dark:bg-slate-800/50 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-200 outline-none font-bold text-slate-700 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600 transition-all">
-                    </td>
-                    <td class="px-4 py-2"><input type="number" value="${s.p1}" oninput="updateData(${idx}, 'p1', this.value)" class="data-input w-full text-center bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 font-semibold text-slate-600 dark:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"></td>
-                    <td class="px-4 py-2"><input type="number" value="${s.hy}" oninput="updateData(${idx}, 'hy', this.value)" class="data-input w-full text-center bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 font-semibold text-slate-600 dark:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"></td>
-                    <td class="px-4 py-2"><input type="number" value="${s.p2}" oninput="updateData(${idx}, 'p2', this.value)" class="data-input w-full text-center bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 font-semibold text-slate-600 dark:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"></td>
-                    <td class="px-4 py-2"><input type="number" value="${s.an}" oninput="updateData(${idx}, 'an', this.value)" class="data-input w-full text-center bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 font-semibold text-slate-600 dark:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"></td>
-                    <td id="total-${idx}" class="px-6 py-4 text-center font-black text-sm ${isPass ? 'text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20' : 'text-rose-600 bg-rose-50/50 dark:bg-rose-900/20'}">${total}</td>
-                    <td class="px-4 py-2 no-print text-center">
-                        <button onclick="removeRow(${idx})" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-500 transition-all p-1">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"></path></svg>
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-            updateStats();
-        }
-
-        function updateData(idx, field, val) {
-            students[idx][field] = val;
-            calculateRow(idx);
-            save();
-        }
-
-        function addRow() {
-            students.push({ name: '', p1: '', hy: '', p2: '', an: '' });
-            renderTable();
-            save();
-        }
-
-        function removeRow(idx) {
-            students.splice(idx, 1);
-            renderTable();
-            save();
         }
 
         function updatePassCriteria(val) {
-            passMark = parseFloat(val) || 0;
+            passMark = parseInt(val) || 0;
             localStorage.setItem(SETTINGS_KEY, passMark);
             renderTable();
         }
 
-        function updateStats() {
-            const active = students.filter(s => s.name.trim() !== "" || (s.p1 || s.hy || s.p2 || s.an));
-            let pass = 0, fail = 0, grandTotal = 0;
-            active.forEach(s => {
-                const total = (parseFloat(s.p1)||0) + (parseFloat(s.hy)||0) + (parseFloat(s.p2)||0) + (parseFloat(s.an)||0);
-                if(total >= passMark) pass++; else fail++;
-                grandTotal += total;
+        function renderTable() {
+            tableBody.innerHTML = '';
+            data.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = row.type === 'section' ? "section-row" : "student-row";
+                
+                if (row.type === 'section') {
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 text-center no-print"><div class="drag-handle">⠿</div></td>
+                        <td class="px-4 py-3 text-center text-[10px] font-bold text-slate-400">SEC</td>
+                        <td colspan="5" class="px-4 py-2">
+                            <input type="text" value="${row.name}" oninput="updateValue(${idx}, 'name', this.value)" placeholder="SECTION NAME" class="data-input w-full bg-transparent border-none font-black text-sm tracking-widest text-indigo-600 dark:text-indigo-400 uppercase focus:ring-0">
+                        </td>
+                        <td class="bg-slate-100/30 dark:bg-slate-800/50"></td>
+                        <td class="px-4 py-2 no-print text-center"><button onclick="removeRow(${idx})" class="text-slate-300 hover:text-rose-500">×</button></td>
+                    `;
+                } else {
+                    const total = (parseFloat(row.p1)||0) + (parseFloat(row.hy)||0) + (parseFloat(row.p2)||0) + (parseFloat(row.an)||0);
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 text-center no-print"><div class="drag-handle">⠿</div></td>
+                        <td class="px-4 py-3 text-center text-xs font-mono text-slate-300">${idx + 1}</td>
+                        <td class="px-4 py-2">
+                            <input type="text" value="${row.name}" oninput="updateValue(${idx}, 'name', this.value)" placeholder="Student Name" class="data-input w-full bg-slate-50 dark:bg-slate-800/50 rounded px-2 py-1.5 text-sm font-bold">
+                        </td>
+                        <td class="px-1 py-2 text-center"><input type="number" step="0.5" value="${row.p1}" oninput="updateValue(${idx}, 'p1', this.value)" class="data-input w-16 bg-slate-50 dark:bg-slate-800/50 rounded px-1 py-1.5 text-center text-sm"></td>
+                        <td class="px-1 py-2 text-center"><input type="number" step="0.5" value="${row.hy}" oninput="updateValue(${idx}, 'hy', this.value)" class="data-input w-16 bg-slate-50 dark:bg-slate-800/50 rounded px-1 py-1.5 text-center text-sm"></td>
+                        <td class="px-1 py-2 text-center"><input type="number" step="0.5" value="${row.p2}" oninput="updateValue(${idx}, 'p2', this.value)" class="data-input w-16 bg-slate-50 dark:bg-slate-800/50 rounded px-1 py-1.5 text-center text-sm"></td>
+                        <td class="px-1 py-2 text-center"><input type="number" step="0.5" value="${row.an}" oninput="updateValue(${idx}, 'an', this.value)" class="data-input w-16 bg-slate-50 dark:bg-slate-800/50 rounded px-1 py-1.5 text-center text-sm"></td>
+                        <td class="px-4 py-2 text-center font-black text-sm bg-slate-50/50 dark:bg-slate-800 ${total >= passMark ? 'text-indigo-600' : 'text-rose-500'}">${total.toFixed(1).replace(/\.0$/, '')}</td>
+                        <td class="px-4 py-2 no-print text-center"><button onclick="removeRow(${idx})" class="text-slate-300 hover:text-rose-500">×</button></td>
+                    `;
+                }
+                tableBody.appendChild(tr);
             });
-            
-            document.getElementById('statTotal').innerText = active.length;
-            document.getElementById('statPass').innerText = pass;
-            document.getElementById('statFail').innerText = fail;
-            document.getElementById('statPassPerc').innerText = active.length ? Math.round((pass/active.length)*100) + "%" : "0%";
-            document.getElementById('statAvg').innerText = active.length ? (grandTotal / active.length).toFixed(1) : "0.0";
+            updateStats();
         }
 
-        function save() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
-            const indicator = document.getElementById('saveIndicator');
-            indicator.style.opacity = "1";
-            setTimeout(() => indicator.style.opacity = "0", 2000);
+        function updateValue(idx, key, val) {
+            data[idx][key] = val;
+            save();
+            updateStats();
+            if (data[idx].type === 'student') {
+                const total = (parseFloat(data[idx].p1)||0) + (parseFloat(data[idx].hy)||0) + (parseFloat(data[idx].p2)||0) + (parseFloat(data[idx].an)||0);
+                const cells = tableBody.children[idx].cells;
+                const totalCell = cells[cells.length - 2];
+                totalCell.innerText = total.toFixed(1).replace(/\.0$/, '');
+                totalCell.className = `px-4 py-2 text-center font-black text-sm bg-slate-50/50 dark:bg-slate-800 ${total >= passMark ? 'text-indigo-600' : 'text-rose-500'}`;
+            }
         }
+
+        function addRow(type) {
+            data.push({ type, name: '', p1:'', hy:'', p2:'', an:'' });
+            renderTable(); save();
+        }
+
+        function removeRow(idx) { data.splice(idx, 1); renderTable(); save(); }
+
+        function updateStats() {
+            const students = data.filter(r => r.type === 'student' && r.name.trim() !== '');
+            let pass = 0, totalMarks = 0;
+            students.forEach(s => {
+                const total = (parseFloat(s.p1)||0) + (parseFloat(s.hy)||0) + (parseFloat(s.p2)||0) + (parseFloat(s.an)||0);
+                if (total >= passMark) pass++;
+                totalMarks += total;
+            });
+            document.getElementById('statTotal').innerText = students.length;
+            document.getElementById('statPass').innerText = pass;
+            document.getElementById('statFail').innerText = students.length - pass;
+            document.getElementById('statAvg').innerText = students.length ? (totalMarks / students.length).toFixed(1) : "0.0";
+        }
+
+        function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
         async function exportToPDF() {
-            const container = document.getElementById('report-main-container');
-            const htmlTag = document.getElementById('main-html');
-            const isDark = htmlTag.classList.contains('dark');
-            
-            // Force Light theme for PDF export quality
-            if(isDark) htmlTag.classList.remove('dark');
-            container.classList.add('pdf-mode');
-            
+            const element = document.body;
+            const wasDark = document.documentElement.classList.contains('dark');
+            document.documentElement.classList.remove('dark');
+            element.classList.add('pdf-export-mode');
             const opt = {
-                margin: 0.4,
-                filename: 'NDS_Annual_Report_Dashboard.pdf',
-                image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' },
-                pagebreak: { mode: ['css', 'legacy'] }
+                margin: [10, 5, 10, 5],
+                filename: 'NDS_Annual_Report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+                pagebreak: { mode: 'avoid-all' }
             };
-
-            try {
-                await html2pdf().set(opt).from(container).save();
-            } finally {
-                container.classList.remove('pdf-mode');
-                if(isDark) htmlTag.classList.add('dark');
+            try { await html2pdf().set(opt).from(element).save(); }
+            finally {
+                element.classList.remove('pdf-export-mode');
+                if (wasDark) document.documentElement.classList.add('dark');
             }
         }
 
         function exportToCSV() {
-            let csv = "S.NO,Name,P1,HY,P2,Annual,Total,Status\n";
-            students.forEach((s, idx) => {
-                const total = (parseFloat(s.p1)||0) + (parseFloat(s.hy)||0) + (parseFloat(s.p2)||0) + (parseFloat(s.an)||0);
-                const status = total >= passMark ? "PASS" : "FAIL";
-                csv += `${idx + 1},"${s.name}",${s.p1||0},${s.hy||0},${s.p2||0},${s.an||0},${total},${status}\n`;
+            let csv = "Type,Name,P1,HY,P2,Annual,Total,Status\n";
+            data.forEach(r => {
+                const total = (parseFloat(r.p1)||0) + (parseFloat(r.hy)||0) + (parseFloat(r.p2)||0) + (parseFloat(r.an)||0);
+                const status = r.type === 'student' ? (total >= passMark ? "Pass" : "Fail") : "-";
+                csv += `${r.type.toUpperCase()},"${r.name}",${r.p1||0},${r.hy||0},${r.p2||0},${r.an||0},${total},${status}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `NDS_Music_Export_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
+            const a = document.createElement('a'); a.href = url; a.download = `NDS_Report_Export.csv`; a.click();
         }
 
         function saveBackup() {
-            const blob = new Blob([JSON.stringify(students)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `nds_music_backup.json`;
-            a.click();
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+            a.download = `nds_backup.json`; a.click();
         }
 
-        function loadBackup(e) {
+        function loadBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(event.target.result);
-                    if(Array.isArray(data)) { students = data; save(); renderTable(); }
-                } catch(e) { alert("Corrupt backup file."); }
+                    const imported = JSON.parse(e.target.result);
+                    data = imported.map(item => {
+                        const isSection = !item.p1 && !item.hy && !item.p2 && !item.an;
+                        return { ...item, type: item.type || (isSection ? 'section' : 'student') };
+                    });
+                    save(); renderTable();
+                } catch (err) { alert("Invalid Backup File"); }
             };
-            reader.readAsText(e.target.files[0]);
-        }
-
-        function clearData() {
-            if(confirm("Confirm: Wipe all records?")) {
-                students = [{ name: '', p1: '', hy: '', p2: '', an: '' }];
-                save();
-                renderTable();
-            }
+            reader.readAsText(file);
         }
 
         renderTable();
